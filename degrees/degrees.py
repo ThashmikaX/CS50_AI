@@ -4,7 +4,7 @@ import sys
 from util import Node, StackFrontier, QueueFrontier
 
 # Maps names to a set of corresponding person_ids
-names = {} # names = {"name": {person_id1, person_id2, ...}}
+names = {}
 
 # Maps person_ids to a dictionary of: name, birth, movies (a set of movie_ids)
 people = {}
@@ -93,7 +93,40 @@ def shortest_path(source, target):
     """
 
     # TODO
-    raise NotImplementedError
+    num_explored = 0
+
+    start = Node(state=source, parent=None, action=None)
+    frontier = QueueFrontier()
+    frontier.add(start)
+
+    explored = set()
+
+    while True:
+        if frontier.empty():
+            return None
+        
+        node = frontier.remove()
+        num_explored+=1
+
+        if node.state == target:
+            actions = []
+            cells = []
+            while node.parent is not None:
+                actions.append(node.action)
+                cells.append(node.state)
+                node = node.parent
+            actions.reverse()
+            cells.reverse()
+            return actions
+
+        explored.add(node.state)
+
+        for i in neighbors_for_person(node.state):
+            if not frontier.contains_state(i[1]) and i[1] not in explored:
+                child = Node(state=i[1], parent=node, action=i)
+                frontier.add(child)
+
+
 
 
 def person_id_for_name(name):
